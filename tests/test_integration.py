@@ -1,19 +1,17 @@
 """Integration tests for end-to-end pipeline functionality."""
 
+import json
+import tempfile
+from pathlib import Path
+
 import pytest
 import torch
-import tempfile
 import yaml
-import json
-from pathlib import Path
-from unittest.mock import patch
-import subprocess
-import sys
 
-from tok.bpe import BPETokenizer, train_bpe
 from model.gpt import TinyGPT
-from train import get_batch, train_step, evaluate, save_checkpoint, load_checkpoint
 from sample import sample
+from tok.bpe import BPETokenizer, train_bpe
+from train import evaluate, get_batch, load_checkpoint, save_checkpoint, train_step
 from utils.csv_logger import CSVLogger
 
 
@@ -117,7 +115,7 @@ class TestTrainingPipeline:
 
         # Training steps
         initial_loss = None
-        for step in range(5):
+        for _step in range(5):
             batch = get_batch(data, batch_size, seq_len, device)
             loss = train_step(model, batch, optimizer)
 
@@ -148,10 +146,10 @@ class TestTrainingPipeline:
         device = torch.device("cpu")
 
         # Training with evaluation
-        for step in range(3):
+        for _step in range(3):
             # Training step
             batch = get_batch(train_data, batch_size, seq_len, device)
-            train_loss = train_step(model, batch, optimizer)
+            train_step(model, batch, optimizer)
 
             # Evaluation
             val_metrics = evaluate(
@@ -190,7 +188,7 @@ class TestTrainingPipeline:
             data = torch.randint(0, 50, (200,))
             device = torch.device("cpu")
 
-            for step in range(3):
+            for _step in range(3):
                 batch = get_batch(data, 2, 8, device)
                 loss = train_step(model, batch, optimizer)
 
@@ -220,7 +218,7 @@ class TestTrainingPipeline:
 
             # Verify model weights are identical
             for orig_param, new_param in zip(
-                model.parameters(), new_model.parameters()
+                model.parameters(), new_model.parameters(), strict=False
             ):
                 assert torch.allclose(orig_param, new_param, atol=1e-6)
 
@@ -331,7 +329,7 @@ class TestEndToEndWorkflow:
             device = torch.device("cpu")
 
             # Quick training
-            for step in range(10):
+            for _step in range(10):
                 batch = get_batch(data, batch_size=4, seq_len=16, device=device)
                 loss = train_step(model, batch, optimizer)
 
@@ -360,7 +358,7 @@ class TestEndToEndWorkflow:
 
             # 6. Load model and generate text
             new_model = TinyGPT(**config)
-            checkpoint_data = load_checkpoint(model_path, new_model)
+            load_checkpoint(model_path, new_model)
 
             generated_text = sample(
                 model=new_model,
@@ -441,7 +439,7 @@ class TestConfigurationIntegration:
                 yaml.dump(config_data, f)
 
             # Load and use config
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 loaded_config = yaml.safe_load(f)
 
             # Create model from config
@@ -481,7 +479,7 @@ class TestConfigurationIntegration:
                 json.dump(config_data, f)
 
             # Load and verify
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 loaded_config = json.load(f)
 
             assert loaded_config == config_data
@@ -519,7 +517,7 @@ class TestPerformanceIntegration:
         device = torch.device("cpu")
 
         # Multiple training steps to check for memory leaks
-        for step in range(10):
+        for _step in range(10):
             batch = get_batch(data, 4, 32, device)
             loss = train_step(model, batch, optimizer)
 

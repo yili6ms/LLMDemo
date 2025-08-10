@@ -1,23 +1,23 @@
 """Tests for training utilities and functions."""
 
+import json
+import tempfile
+from pathlib import Path
+
 import pytest
 import torch
 import torch.nn as nn
-from pathlib import Path
-import tempfile
 import yaml
-import json
-from unittest.mock import patch
 
+from model.gpt import TinyGPT
 from train import (
+    evaluate,
     get_batch,
     get_lr_scheduler,
-    train_step,
-    evaluate,
-    save_checkpoint,
     load_checkpoint,
+    save_checkpoint,
+    train_step,
 )
-from model.gpt import TinyGPT
 
 
 class TestTrainingUtils:
@@ -137,7 +137,7 @@ class TestTrainingUtils:
         assert loss > 0
 
         # Check that parameters changed
-        for initial_param, current_param in zip(initial_params, model.parameters()):
+        for initial_param, current_param in zip(initial_params, model.parameters(), strict=False):
             assert not torch.equal(
                 initial_param, current_param
             ), "Parameters should change after training step"
@@ -217,7 +217,7 @@ class TestTrainingUtils:
 
             # Check that model weights are the same
             for orig_param, new_param in zip(
-                model.parameters(), new_model.parameters()
+                model.parameters(), new_model.parameters(), strict=False
             ):
                 assert torch.equal(orig_param, new_param)
 
@@ -242,7 +242,7 @@ class TestTrainingIntegration:
                 yaml.dump(config_data, f)
 
             # Test YAML loading
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 loaded_config = yaml.safe_load(f)
 
             assert loaded_config == config_data
@@ -252,7 +252,7 @@ class TestTrainingIntegration:
             with open(json_path, "w") as f:
                 json.dump(config_data, f)
 
-            with open(json_path, "r") as f:
+            with open(json_path) as f:
                 loaded_json_config = json.load(f)
 
             assert loaded_json_config == config_data

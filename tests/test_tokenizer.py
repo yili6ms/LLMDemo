@@ -1,10 +1,12 @@
 """Tests for BPE tokenizer."""
 
-import pytest
-from hypothesis import given, strategies as st
-from tok.bpe import BPETokenizer
 import tempfile
 from pathlib import Path
+
+from hypothesis import given
+from hypothesis import strategies as st
+
+from tok.bpe import BPETokenizer
 
 
 class TestBPETokenizer:

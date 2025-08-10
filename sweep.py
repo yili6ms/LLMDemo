@@ -2,15 +2,16 @@
 
 import itertools
 import json
-import yaml
-from pathlib import Path
-from typing import Dict, Any, List
 import subprocess
 import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import yaml
 
 
-def generate_sweep_configs(base_config: Dict[str, Any]) -> List[Dict[str, Any]]:
+def generate_sweep_configs(base_config: dict[str, Any]) -> list[dict[str, Any]]:
     """Generate sweep configurations from hyperparameter grid."""
 
     # Define hyperparameter grid
@@ -30,7 +31,7 @@ def generate_sweep_configs(base_config: Dict[str, Any]) -> List[Dict[str, Any]]:
         config = base_config.copy()
 
         # Update with sweep parameters
-        for param, value in zip(param_names, combination):
+        for param, value in zip(param_names, combination, strict=False):
             config[param] = value
 
         # Ensure n_heads divides d_model
@@ -58,7 +59,7 @@ def generate_sweep_configs(base_config: Dict[str, Any]) -> List[Dict[str, Any]]:
     return configs
 
 
-def run_experiment(config: Dict[str, Any], experiment_id: str) -> Dict[str, Any]:
+def run_experiment(config: dict[str, Any], experiment_id: str) -> dict[str, Any]:
     """Run a single experiment with given config."""
 
     # Create experiment directory
@@ -150,7 +151,7 @@ def main():
 
     # Load base configuration
     base_config_path = Path("configs/tiny.yaml")
-    with open(base_config_path, "r") as f:
+    with open(base_config_path) as f:
         base_config = yaml.safe_load(f)
 
     # Generate sweep configurations

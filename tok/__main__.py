@@ -3,6 +3,7 @@
 import argparse
 import sys
 from pathlib import Path
+
 from .bpe import BPETokenizer, train_bpe
 
 
@@ -55,7 +56,7 @@ def main():
         if args.text:
             text = args.text
         elif args.file:
-            with open(args.file, "r", encoding="utf-8") as f:
+            with open(args.file, encoding="utf-8") as f:
                 text = f.read()
         else:
             print("Please provide --text or --file")

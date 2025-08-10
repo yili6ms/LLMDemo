@@ -1,28 +1,26 @@
 """Training script for TinyGPT."""
 
-from typing import Optional, Dict, Any, Tuple
 import argparse
-from pathlib import Path
 import json
-import yaml
 import math
-import time
-from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 import torch
 import torch.nn as nn
-from torch.optim import AdamW
+import yaml
 from torch.cuda.amp import GradScaler, autocast
+from torch.optim import AdamW
 from torch.optim.lr_scheduler import LambdaLR
 
 from model.gpt import TinyGPT
 from tok.bpe import BPETokenizer
-from utils.metrics import compute_perplexity, ConsoleLogger, MovingAverage
+from utils.metrics import ConsoleLogger, MovingAverage, compute_perplexity
 
 
 def get_batch(
     data: torch.Tensor, batch_size: int, seq_len: int, device: torch.device
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor]:
     """Get random batch of training data."""
     ix = torch.randint(len(data) - seq_len, (batch_size,))
     x = torch.stack([data[i : i + seq_len] for i in ix])
@@ -57,9 +55,9 @@ def get_lr_scheduler(
 
 def train_step(
     model: nn.Module,
-    batch: Tuple[torch.Tensor, torch.Tensor],
+    batch: tuple[torch.Tensor, torch.Tensor],
     optimizer: torch.optim.Optimizer,
-    scaler: Optional[GradScaler] = None,
+    scaler: GradScaler | None = None,
     grad_clip: float = 1.0,
 ) -> float:
     """Single training step."""
@@ -94,7 +92,7 @@ def evaluate(
     seq_len: int,
     device: torch.device,
     num_batches: int = 50,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Evaluate model on validation set."""
     model.eval()
     losses = []
@@ -117,7 +115,7 @@ def save_checkpoint(
     scheduler: LambdaLR,
     step: int,
     val_loss: float,
-    config: Dict[str, Any],
+    config: dict[str, Any],
     path: Path,
 ):
     """Save model checkpoint."""
@@ -138,9 +136,9 @@ def save_checkpoint(
 def load_checkpoint(
     path: Path,
     model: nn.Module,
-    optimizer: Optional[torch.optim.Optimizer] = None,
-    scheduler: Optional[LambdaLR] = None,
-) -> Dict[str, Any]:
+    optimizer: torch.optim.Optimizer | None = None,
+    scheduler: LambdaLR | None = None,
+) -> dict[str, Any]:
     """Load model checkpoint."""
     checkpoint = torch.load(path)
     model.load_state_dict(checkpoint["model_state_dict"])
@@ -154,7 +152,7 @@ def load_checkpoint(
     return checkpoint
 
 
-def train(config: Dict[str, Any]) -> None:
+def train(config: dict[str, Any]) -> None:
     """Main training loop."""
     # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -176,7 +174,7 @@ def train(config: Dict[str, Any]) -> None:
 
     # Load and tokenize data
     print("Loading and tokenizing data...")
-    with open(config["data_path"], "r", encoding="utf-8") as f:
+    with open(config["data_path"], encoding="utf-8") as f:
         text = f.read()
 
     tokens = tokenizer.encode(text)
@@ -263,7 +261,8 @@ def train(config: Dict[str, Any]) -> None:
                 model, val_data, config["batch_size"], config["seq_len"], device
             )
             print(
-                f"Validation - Loss: {val_metrics['loss']:.4f}, PPL: {val_metrics['perplexity']:.2f}"
+                f"Validation - Loss: {val_metrics['loss']:.4f}, "
+                f"PPL: {val_metrics['perplexity']:.2f}"
             )
 
             # Save checkpoint if best
@@ -304,7 +303,8 @@ def train(config: Dict[str, Any]) -> None:
         num_batches=100,
     )
     print(
-        f"Final - Loss: {final_metrics['loss']:.4f}, PPL: {final_metrics['perplexity']:.2f}"
+        f"Final - Loss: {final_metrics['loss']:.4f}, "
+        f"PPL: {final_metrics['perplexity']:.2f}"
     )
 
 
@@ -316,10 +316,10 @@ def main():
     # Load config
     config_path = Path(args.config)
     if config_path.suffix == ".yaml" or config_path.suffix == ".yml":
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             config = yaml.safe_load(f)
     elif config_path.suffix == ".json":
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             config = json.load(f)
     else:
         raise ValueError(f"Unsupported config format: {config_path.suffix}")

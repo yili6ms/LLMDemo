@@ -2,8 +2,9 @@
 
 import argparse
 from pathlib import Path
-from typing import Optional
+
 import torch
+
 from model.gpt import TinyGPT
 from tok.bpe import BPETokenizer
 
@@ -14,12 +15,15 @@ def sample(
     prompt: str,
     max_new_tokens: int = 100,
     temperature: float = 1.0,
-    top_k: Optional[int] = None,
-    top_p: Optional[float] = None,
-    seed: Optional[int] = None,
-    device: torch.device = torch.device("cpu"),
+    top_k: int | None = None,
+    top_p: float | None = None,
+    seed: int | None = None,
+    device: torch.device | None = None,
 ) -> str:
     """Generate text from prompt."""
+    if device is None:
+        device = torch.device("cpu")
+
     if seed is not None:
         torch.manual_seed(seed)
 
@@ -101,7 +105,8 @@ def main():
     model.eval()
 
     print(
-        f"Loaded model from step {checkpoint['step']} (val_loss: {checkpoint['val_loss']:.4f})"
+        f"Loaded model from step {checkpoint['step']} "
+        f"(val_loss: {checkpoint['val_loss']:.4f})"
     )
     print(f"Prompt: {args.prompt}")
     print("-" * 50)

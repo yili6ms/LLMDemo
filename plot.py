@@ -1,11 +1,12 @@
 """Plot training metrics from CSV logs."""
 
 import argparse
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
+
 from utils.csv_logger import CSVLogger
-from typing import List, Dict, Any
 
 
 def plot_training_metrics(log_path: Path, output_path: Path = None):
@@ -202,7 +203,7 @@ def plot_training_metrics(log_path: Path, output_path: Path = None):
 
 
 def compare_experiments(
-    log_paths: List[Path], labels: List[str] = None, output_path: Path = None
+    log_paths: list[Path], labels: list[str] = None, output_path: Path = None
 ):
     """Compare multiple training runs."""
 
@@ -215,7 +216,7 @@ def compare_experiments(
 
     # Plot 1: Loss comparison
     plt.subplot(1, 3, 1)
-    for i, (log_path, label) in enumerate(zip(log_paths, labels)):
+    for i, (log_path, label) in enumerate(zip(log_paths, labels, strict=False)):
         logger = CSVLogger(log_path)
         logs = logger.read_logs()
 
@@ -242,7 +243,7 @@ def compare_experiments(
 
     # Plot 2: Perplexity comparison
     plt.subplot(1, 3, 2)
-    for i, (log_path, label) in enumerate(zip(log_paths, labels)):
+    for i, (log_path, label) in enumerate(zip(log_paths, labels, strict=False)):
         logger = CSVLogger(log_path)
         logs = logger.read_logs()
 
@@ -272,7 +273,7 @@ def compare_experiments(
 
     # Plot 3: Learning Rate comparison
     plt.subplot(1, 3, 3)
-    for i, (log_path, label) in enumerate(zip(log_paths, labels)):
+    for i, (log_path, label) in enumerate(zip(log_paths, labels, strict=False)):
         logger = CSVLogger(log_path)
         logs = logger.read_logs()
 

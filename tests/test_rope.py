@@ -1,9 +1,10 @@
 """Tests for RoPE (Rotary Position Embedding) implementation."""
 
+
 import pytest
 import torch
-import math
-from model.gpt import apply_rope, CausalSelfAttention, TinyGPT
+
+from model.gpt import CausalSelfAttention, TinyGPT, apply_rope
 
 
 class TestApplyRope:
@@ -40,7 +41,7 @@ class TestApplyRope:
     def test_rope_rotation_property(self):
         """Test that RoPE implements proper rotation."""
         # Simple case: 1 batch, 1 head, 1 sequence position, 4-dim head
-        batch_size, n_heads, seq_len, head_dim = 1, 1, 1, 4
+        _batch_size, _n_heads, _seq_len, _head_dim = 1, 1, 1, 4
 
         # Create specific test vectors
         x = torch.tensor([[[[1.0, 0.0, 2.0, 0.0]]]])  # [batch, heads, seq, head_dim]
@@ -315,7 +316,7 @@ class TestRopeNumericalStability:
 
     def test_rope_large_values(self):
         """Test RoPE with large input values."""
-        batch_size, n_heads, seq_len, head_dim = 1, 1, 2, 4
+        _batch_size, _n_heads, _seq_len, _head_dim = 1, 1, 2, 4
 
         # Large input values
         x = torch.tensor(
@@ -333,7 +334,7 @@ class TestRopeNumericalStability:
 
     def test_rope_small_values(self):
         """Test RoPE with very small input values."""
-        batch_size, n_heads, seq_len, head_dim = 1, 1, 1, 4
+        _batch_size, _n_heads, _seq_len, _head_dim = 1, 1, 1, 4
 
         # Very small values
         x = torch.tensor([[[[1e-10, -1e-10, 1e-15, -1e-15]]]])

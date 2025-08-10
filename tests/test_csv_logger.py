@@ -1,10 +1,9 @@
 """Tests for CSV logging utilities."""
 
-import pytest
 import csv
-from pathlib import Path
 import tempfile
 from datetime import datetime
+from pathlib import Path
 
 from utils.csv_logger import CSVLogger
 
@@ -16,12 +15,12 @@ class TestCSVLogger:
         """Test that initialization creates CSV file with headers."""
         with tempfile.TemporaryDirectory() as tmpdir:
             log_path = Path(tmpdir) / "test.csv"
-            logger = CSVLogger(log_path)
+            CSVLogger(log_path)
 
             assert log_path.exists()
 
             # Check headers
-            with open(log_path, "r") as f:
+            with open(log_path) as f:
                 reader = csv.reader(f)
                 headers = next(reader)
 
@@ -43,10 +42,10 @@ class TestCSVLogger:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             log_path = Path(tmpdir) / "custom.csv"
-            logger = CSVLogger(log_path, fields=custom_fields)
+            CSVLogger(log_path, fields=custom_fields)
 
             # Check headers
-            with open(log_path, "r") as f:
+            with open(log_path) as f:
                 reader = csv.reader(f)
                 headers = next(reader)
 
@@ -128,7 +127,7 @@ class TestCSVLogger:
             logger.log(metrics)
 
             # Read raw CSV to check what was actually written
-            with open(log_path, "r") as f:
+            with open(log_path) as f:
                 reader = csv.DictReader(f)
                 row = next(reader)
 
@@ -268,7 +267,7 @@ class TestCSVLogger:
             assert not nested_path.parent.exists()
 
             # Should create directories
-            logger = CSVLogger(nested_path)
+            CSVLogger(nested_path)
 
             assert nested_path.parent.exists()
             assert nested_path.exists()

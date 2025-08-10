@@ -1,10 +1,8 @@
 """Byte-level BPE tokenizer implementation."""
 
-from typing import List, Dict, Tuple, Optional
 import json
-from pathlib import Path
 from collections import defaultdict
-import re
+from pathlib import Path
 
 
 class BPETokenizer:
@@ -12,15 +10,15 @@ class BPETokenizer:
 
     def __init__(self, vocab_size: int = 1000):
         self.vocab_size = vocab_size
-        self.merges: List[Tuple[int, int]] = []
-        self.vocab: Dict[int, int] = {}
-        self.inverse_vocab: Dict[int, int] = {}
+        self.merges: list[tuple[int, int]] = []
+        self.vocab: dict[int, int] = {}
+        self.inverse_vocab: dict[int, int] = {}
         # Initialize with all bytes
         for i in range(256):
             self.vocab[i] = i
             self.inverse_vocab[i] = i
 
-    def _get_pairs(self, tokens: List[int]) -> Dict[Tuple[int, int], int]:
+    def _get_pairs(self, tokens: list[int]) -> dict[tuple[int, int], int]:
         """Get all adjacent pairs and their counts."""
         pairs = defaultdict(int)
         for i in range(len(tokens) - 1):
@@ -66,7 +64,7 @@ class BPETokenizer:
 
             next_token += 1
 
-    def encode(self, text: str) -> List[int]:
+    def encode(self, text: str) -> list[int]:
         """Encode text to token IDs."""
         # Convert to bytes
         tokens = list(text.encode("utf-8"))
@@ -92,7 +90,7 @@ class BPETokenizer:
 
         return tokens
 
-    def decode(self, tokens: List[int]) -> str:
+    def decode(self, tokens: list[int]) -> str:
         """Decode token IDs to text."""
         # Build merge mapping
         merge_map = {}
@@ -100,7 +98,7 @@ class BPETokenizer:
             merge_map[256 + idx] = (a, b)
 
         # Recursively decode tokens
-        def decode_token(token: int) -> List[int]:
+        def decode_token(token: int) -> list[int]:
             if token < 256:
                 return [token]
             elif token in merge_map:
@@ -129,7 +127,7 @@ class BPETokenizer:
 
     def load(self, path: Path) -> None:
         """Load tokenizer from JSON file."""
-        with open(path, "r") as f:
+        with open(path) as f:
             data = json.load(f)
         self.vocab_size = data["vocab_size"]
         self.merges = [(a, b) for a, b in data["merges"]]
@@ -152,7 +150,7 @@ def train_bpe(
     tokenizer = BPETokenizer(vocab_size=vocab_size)
 
     # Read text from file
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(input_file, encoding="utf-8") as f:
         text = f.read()
 
     # Train tokenizer

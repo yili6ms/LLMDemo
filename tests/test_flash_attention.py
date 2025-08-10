@@ -1,9 +1,11 @@
 """Tests for FlashAttention/SDPA integration."""
 
+from unittest.mock import patch
+
 import pytest
 import torch
 import torch.nn.functional as F
-from unittest.mock import patch, MagicMock
+
 from model.gpt import CausalSelfAttention, TinyGPT
 
 
@@ -81,8 +83,8 @@ class TestFlashAttentionFallback:
             attn_with_sdpa = CausalSelfAttention(
                 d_model=d_model, n_heads=n_heads, use_flash=True
             )
-            assert attn_with_sdpa.has_sdpa == True
-            assert attn_with_sdpa.use_flash == True
+            assert attn_with_sdpa.has_sdpa
+            assert attn_with_sdpa.use_flash
 
         # Test when SDPA is not available (mock ImportError)
         def mock_import_error(*args, **kwargs):
@@ -100,8 +102,8 @@ class TestFlashAttentionFallback:
             attn_no_sdpa.has_sdpa = False
             attn_no_sdpa.use_flash = False
 
-            assert attn_no_sdpa.has_sdpa == False
-            assert attn_no_sdpa.use_flash == False
+            assert not attn_no_sdpa.has_sdpa
+            assert not attn_no_sdpa.use_flash
 
     def test_flash_attention_causal_mask(self):
         """Test that FlashAttention receives correct causal mask."""
@@ -118,7 +120,7 @@ class TestFlashAttentionFallback:
             batch_size, seq_len = 2, 6
             x = torch.randn(batch_size, seq_len, d_model)
 
-            output = attn(x)
+            attn(x)
 
             # Check that SDPA was called with correct arguments
             assert mock_sdpa.call_count == 1
@@ -248,7 +250,7 @@ class TestFlashAttentionFallback:
 
             # Test in training mode
             attn.train()
-            output_train = attn(x)
+            attn(x)
 
             # Check dropout_p parameter in training mode
             call_args_train = mock_sdpa.call_args[1]
@@ -256,7 +258,7 @@ class TestFlashAttentionFallback:
 
             # Test in eval mode
             attn.eval()
-            output_eval = attn(x)
+            attn(x)
 
             # Check dropout_p parameter in eval mode
             call_args_eval = mock_sdpa.call_args[1]

@@ -1,13 +1,12 @@
 """Tests for text sampling and generation functionality."""
 
+from unittest.mock import patch
+
 import pytest
 import torch
-import tempfile
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
-from sample import sample
 from model.gpt import TinyGPT
+from sample import sample
 from tok.bpe import BPETokenizer
 
 
@@ -206,7 +205,6 @@ class TestSampleFunction:
 
         # Mock the tokenizer to return predictable lengths
         original_encode = tokenizer.encode
-        original_decode = tokenizer.decode
 
         def mock_encode(text):
             return [1, 2] if text == "Hi" else original_encode(text)
@@ -269,13 +267,13 @@ class TestSampleFunction:
 
         # Start in training mode
         model.train()
-        assert model.training == True
+        assert model.training
 
         prompt = "Test"
         device = torch.device("cpu")
 
         with patch.object(model, "eval", wraps=model.eval) as mock_eval:
-            result = sample(
+            sample(
                 model=model,
                 tokenizer=tokenizer,
                 prompt=prompt,
@@ -298,7 +296,7 @@ class TestSampleFunction:
             # Mock tensor creation to verify device parameter
             mock_tensor.return_value = torch.tensor([1, 2, 3])
 
-            result = sample(
+            sample(
                 model=model,
                 tokenizer=tokenizer,
                 prompt=prompt,

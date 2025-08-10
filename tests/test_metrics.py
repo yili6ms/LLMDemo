@@ -1,13 +1,13 @@
 """Tests for metrics and logging utilities."""
 
-import pytest
 import math
-from io import StringIO
-import sys
-from unittest.mock import patch
 from datetime import datetime
+from io import StringIO
+from unittest.mock import patch
 
-from utils.metrics import MovingAverage, compute_perplexity, ConsoleLogger
+import pytest
+
+from utils.metrics import ConsoleLogger, MovingAverage, compute_perplexity
 
 
 class TestMovingAverage:
@@ -135,7 +135,7 @@ class TestConsoleLogger:
         """Test that step increments on each log call."""
         logger = ConsoleLogger(log_interval=1)  # Log every step
 
-        with patch("builtins.print") as mock_print:
+        with patch("builtins.print"):
             logger.log(1.5, 4.5, 0.001)
             assert logger.step == 1
 

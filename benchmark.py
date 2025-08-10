@@ -1,15 +1,15 @@
 """Performance benchmarking script for TinyGPT."""
 
 import argparse
-import time
-import torch
-import torch.nn as nn
-from pathlib import Path
-import json
-from datetime import datetime
 import gc
-import psutil
+import json
 import os
+import time
+from datetime import datetime
+from pathlib import Path
+
+import psutil
+import torch
 
 from model.gpt import TinyGPT
 from tok.bpe import BPETokenizer
@@ -378,7 +378,7 @@ def main():
         f.write("\n---\n")
         f.write(f"\n*Generated on {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')}*\n")
 
-    print(f"\n✅ Benchmark complete!")
+    print("\n✅ Benchmark complete!")
     print(f"Results saved to: {args.output}")
     print(f"Detailed data saved to: {json_output}")
 

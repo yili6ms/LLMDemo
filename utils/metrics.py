@@ -1,8 +1,5 @@
 """Metrics and logging utilities."""
 
-from typing import List, Optional
-import torch
-import numpy as np
 import math
 from datetime import datetime
 
@@ -12,7 +9,7 @@ class MovingAverage:
 
     def __init__(self, window_size: int = 100):
         self.window_size = window_size
-        self.values: List[float] = []
+        self.values: list[float] = []
 
     def update(self, value: float) -> None:
         """Add value to moving average."""
@@ -49,7 +46,7 @@ class ConsoleLogger:
         loss: float,
         perplexity: float,
         lr: float,
-        tokens_per_sec: Optional[float] = None,
+        tokens_per_sec: float | None = None,
     ) -> None:
         """Log metrics to console."""
         self.step += 1

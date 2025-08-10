@@ -1,9 +1,9 @@
 """Tests for GPT model components."""
 
-import pytest
 import torch
 import torch.nn as nn
-from model.gpt import CausalSelfAttention, MLP, Block, TinyGPT
+
+from model.gpt import MLP, Block, CausalSelfAttention, TinyGPT
 
 
 class TestCausalSelfAttention:

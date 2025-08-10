@@ -1,7 +1,7 @@
 """Tiny GPT model implementation."""
 
-from typing import Optional, Tuple
 import math
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -47,10 +47,11 @@ class CausalSelfAttention(nn.Module):
 
         # Check if SDPA is available (PyTorch >= 2.0)
         try:
-            from torch.nn.functional import scaled_dot_product_attention
-
+            import torch.nn.functional as F
+            # Test if scaled_dot_product_attention is available
+            F.scaled_dot_product_attention
             self.has_sdpa = True
-        except ImportError:
+        except (ImportError, AttributeError):
             self.has_sdpa = False
             self.use_flash = False
 
@@ -242,8 +243,8 @@ class TinyGPT(nn.Module):
             torch.nn.init.zeros_(module.bias)
 
     def forward(
-        self, input_ids: torch.Tensor, targets: Optional[torch.Tensor] = None
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        self, input_ids: torch.Tensor, targets: torch.Tensor | None = None
+    ) -> tuple[torch.Tensor, torch.Tensor | None]:
         """Forward pass of model, returns logits and optional loss."""
         B, T = input_ids.size()
         assert (
@@ -283,8 +284,8 @@ class TinyGPT(nn.Module):
         input_ids: torch.Tensor,
         max_new_tokens: int = 100,
         temperature: float = 1.0,
-        top_k: Optional[int] = None,
-        top_p: Optional[float] = None,
+        top_k: int | None = None,
+        top_p: float | None = None,
     ) -> torch.Tensor:
         """Generate text autoregressively."""
         self.eval()
