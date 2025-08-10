@@ -1,6 +1,5 @@
 """Tests for RoPE (Rotary Position Embedding) implementation."""
 
-
 import pytest
 import torch
 

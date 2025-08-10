@@ -48,6 +48,7 @@ class CausalSelfAttention(nn.Module):
         # Check if SDPA is available (PyTorch >= 2.0)
         try:
             import torch.nn.functional as F
+
             # Test if scaled_dot_product_attention is available
             F.scaled_dot_product_attention
             self.has_sdpa = True

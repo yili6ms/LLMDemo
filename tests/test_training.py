@@ -137,7 +137,9 @@ class TestTrainingUtils:
         assert loss > 0
 
         # Check that parameters changed
-        for initial_param, current_param in zip(initial_params, model.parameters(), strict=False):
+        for initial_param, current_param in zip(
+            initial_params, model.parameters(), strict=False
+        ):
             assert not torch.equal(
                 initial_param, current_param
             ), "Parameters should change after training step"
