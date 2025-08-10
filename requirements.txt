@@ -1,0 +1,16 @@
+# Core dependencies
+torch>=2.1.0
+numpy>=1.24.0
+tqdm>=4.65.0
+pyyaml>=6.0
+
+# Development dependencies
+pytest>=7.3.0
+pytest-cov>=4.0.0
+hypothesis>=6.75.0
+black>=23.0.0
+ruff>=0.1.0
+mypy>=1.0.0
+
+# Optional dependencies for extensions
+matplotlib>=3.7.0  # For plotting

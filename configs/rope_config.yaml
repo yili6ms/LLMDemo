@@ -1,0 +1,37 @@
+# TinyGPT configuration with RoPE positional encoding
+
+# Data
+data_path: data/tiny.txt
+tokenizer_path: tok/bpe.json
+
+# Model architecture
+vocab_size: 1000
+d_model: 128
+n_layers: 4
+n_heads: 4
+dropout: 0.1
+max_seq_len: 256
+tie_weights: true
+use_rope: true      # Enable RoPE instead of learned positional embeddings
+use_flash: true     # Enable FlashAttention/SDPA
+
+# Training
+batch_size: 8
+seq_len: 128
+max_steps: 5000
+learning_rate: 0.001
+weight_decay: 0.01
+grad_clip: 1.0
+mixed_precision: true
+
+# Learning rate schedule
+warmup_steps: 100
+min_lr_ratio: 0.1
+beta1: 0.9
+beta2: 0.999
+
+# Logging and checkpointing
+log_interval: 100
+eval_interval: 500
+checkpoint_interval: 1000
+checkpoint_path: checkpoints/rope_best.pt
